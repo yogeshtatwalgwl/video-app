@@ -55,13 +55,32 @@ export default {
 
     getUserFullMedia() {
         if ( this.userMediaAvailable() ) {
-            return navigator.mediaDevices.getUserMedia( {
-                video: true,
-                audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true
-                }
-            } );
+//            return navigator.mediaDevices.getUserMedia( {
+//                video: true,
+//                audio: {
+//                    echoCancellation: true,
+//                    noiseSuppression: true
+//                }
+//            } );
+var constraints = {
+    audio:  {
+             echoCancellation: true,
+             noiseSuppression: true
+             },
+    video: {
+             "width": {
+                 "min": "300",
+                 "max": "640"
+             },
+             "height": {
+                 "min": "200",
+                 "max": "480"
+             },
+        frameRate: { ideal: 30, max: 60 },
+        facingMode: "environment",
+    }
+};
+  return navigator.mediaDevices.getUserMedia(constraints);
         }
 
         else {
@@ -69,6 +88,7 @@ export default {
         }
     },
 
+//declare ideal values
 
     getUserAudio() {
         if ( this.userMediaAvailable() ) {
@@ -111,14 +131,17 @@ export default {
         return {
             iceServers: [
                 {
-                    urls: ["stun:eu-turn4.xirsys.com"]
+                    urls: ["stun:stun.54.208.95.26:3478"]
                 },
                 {
-                    username: "ml0jh0qMKZKd9P_9C0UIBY2G0nSQMCFBUXGlk6IXDJf8G2uiCymg9WwbEJTMwVeiAAAAAF2__hNSaW5vbGVl",
-                    credential: "4dd454a6-feee-11e9-b185-6adcafebbb45",
+                    username: "username1",
+                    credential: "123456",
                     urls: [
-                        "turn:eu-turn4.xirsys.com:80?transport=udp",
-                        "turn:eu-turn4.xirsys.com:3478?transport=tcp"
+                        "turn:54.208.95.26:3478"
+//                        "turn:global.relay.metered.ca:80?transport=tcp",
+//                        "turn:global.relay.metered.ca:443",
+//                        "turns:global.relay.metered.ca:443?transport=tcp"
+
                     ]
                 }
             ]
@@ -259,7 +282,6 @@ export default {
 
     setLocalStream( stream, mirrorMode = true ) {
         const localVidElem = document.getElementById( 'local' );
-
         localVidElem.srcObject = stream;
         mirrorMode ? localVidElem.classList.add( 'mirror-mode' ) : localVidElem.classList.remove( 'mirror-mode' );
     },
@@ -268,9 +290,9 @@ export default {
     adjustVideoElemSize() {
         let elem = document.getElementsByClassName( 'card' );
         let totalRemoteVideosDesktop = elem.length;
-        let newWidth = totalRemoteVideosDesktop <= 2 ? '50%' : (
-            totalRemoteVideosDesktop == 3 ? '33.33%' : (
-                totalRemoteVideosDesktop <= 8 ? '25%' : (
+        let newWidth = totalRemoteVideosDesktop <= 2 ? '25%' : (
+            totalRemoteVideosDesktop == 3 ? '25%' : (
+                totalRemoteVideosDesktop <= 8 ? '20%' : (
                     totalRemoteVideosDesktop <= 15 ? '20%' : (
                         totalRemoteVideosDesktop <= 18 ? '16%' : (
                             totalRemoteVideosDesktop <= 23 ? '15%' : (
@@ -281,8 +303,6 @@ export default {
                 )
             )
         );
-
-
         for ( let i = 0; i < totalRemoteVideosDesktop; i++ ) {
             elem[i].style.width = newWidth;
         }
